@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MoviesService } from './movies.service';
+import { NotFoundException } from '@nestjs/common';
 
 describe('MoviesService', () => {
   let service: MoviesService;
@@ -16,7 +17,30 @@ describe('MoviesService', () => {
     expect(service).toBeDefined();
   });
 
-  it('should be 5', () => {
-    expect(2 + 3).toEqual(5);
+  describe('getAll', () => {
+    it('should return an array', () => {
+      const result = service.getAll();
+      expect(result).toBeInstanceOf(Array);
+    });
+  });
+
+  describe('getOne', () => {
+    it('should return a movie', () => {
+      service.create({
+        title: 'Test Movie',
+        year: 2020,
+        genres: ['test1', 'test2'],
+      });
+      const movie = service.getOne(1);
+      expect(movie).toBeDefined();
+    });
+
+    it('should throw 404 error', () => {
+      try {
+        service.getOne(999);
+      } catch (error) {
+        expect(error).toBeInstanceOf(NotFoundException);
+      }
+    });
   });
 });
